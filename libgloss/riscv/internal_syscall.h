@@ -12,7 +12,7 @@
 #ifndef _INTERNAL_SYSCALL_H
 #define _INTERNAL_SYSCALL_H
 
-#include <errno.h>
+#include <sys/errno.h>
 
 static inline long
 __syscall_error(long a0)
