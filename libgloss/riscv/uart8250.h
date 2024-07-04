@@ -33,6 +33,6 @@ int uart8250_init();
 
 void uart8250_putc(char ch);
 
-int uart8250_getc(void);
+char uart8250_getc(void);
 
 #endif

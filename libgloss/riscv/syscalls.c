@@ -116,11 +116,41 @@ _open(const char *file, int flags, int mode)
 _ssize_t
 _read(int file, void *ptr, size_t len)
 {
-  for(int i=0; i < len; i++)
+  /**
+   * There is no clear documentation on how read should work. However, 
+   * most places around the web and most importantly the linux man pages,
+   * agree that read should return exactly as many bytes as specified 
+   * in the len parameter, when reading from a file, unless there not 
+   * bytes left to read.
+   * 
+   * With regards to reading from stdin there is no clear documentation 
+   * for what is supposed to be done, so I will go with the version that 
+   * makes the most sense in this regard, which is that the syscall waits 
+   * for the user to press enter in order to stop reading characters from
+   * the console.
+   * 
+   * The return value for stdin will be a null terminated string.
+   */
+  if (file == STDIN_FILENO)
   {
-    ((char*)ptr)[i] = uart8250_getc();
+
+    int bytes_read = 0;
+    char input;
+
+    for (int i = 0; i < len - 1; i++)
+    {
+      input = uart8250_getc();
+      uart8250_putc(input);
+      ((char*)ptr)[i] = input;
+      bytes_read++;
+
+      if ((input == '\r') || (input == '\n')) break;
+    }
+
+    ((char*)ptr)[bytes_read] = '\0';
+
+    return bytes_read;
   }
-	return 0;
 }
 
 int
