@@ -172,7 +172,8 @@ _sbrk(ptrdiff_t incr)
   prevHeap = heap;
 
   // Always return data aligned on a 8 byte boundary
-  nextHeap = (caddr_t) (((unsigned int) (heap + incr) + 7) & ~7);
+  //nextHeap = (caddr_t) (((unsigned int) (heap + incr) + 7) & ~7); // Overflow?
+  nextHeap = (caddr_t) (((ssize_t) (heap + incr) + 7) & ~7); // Overflow?
   if (nextHeap >= (caddr_t) & _eheap) {
     errno = ENOMEM;
     return ((void*)-1); // error - no more memory
