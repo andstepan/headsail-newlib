@@ -20,7 +20,7 @@
 .type   _enter, @function
 .global uart8250_init
 .type   uart8250_init, @function
-.global _sp
+.global _stack_start
   
 _enter:
   # Initialize global pointer
@@ -29,7 +29,7 @@ _enter:
 1:auipc gp, %pcrel_hi(__global_pointer$)
   addi  gp, gp, %pcrel_lo(1b)
 .option pop
-  la    sp, _sp
+  la    sp, _stack_top
 
   # Initialize .data
   la      a0, metal_segment_data_target_start
@@ -37,12 +37,12 @@ _enter:
   la      a2, metal_segment_data_source_start
 
 copy_data:
-    beq a0, a1, clear_bss /* If we have reached the end of .data, move to .bss */
-    lw t0, 0(a2)          /* Load word from source address */
-    sw t0, 0(a0)          /* Store word to destination address */
-    addi a0, a0, 4        /* Increment destination address */
-    addi a2, a2, 4        /* Increment source address */
-    j copy_data           /* Repeat until done */
+  beq a0, a1, clear_bss /* If we have reached the end of .data, move to .bss */
+  lw t0, 0(a2)          /* Load word from source address */
+  sw t0, 0(a0)          /* Store word to destination address */
+  addi a0, a0, 4        /* Increment destination address */
+  addi a2, a2, 4        /* Increment source address */
+  j copy_data           /* Repeat until done */
 
 clear_bss:
   # Clear the bss segment

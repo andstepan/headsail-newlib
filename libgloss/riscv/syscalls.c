@@ -7,8 +7,8 @@
 
 //#include <reent.h>
 
-extern unsigned int _heap;
-extern unsigned int _eheap;
+extern ssize_t _heap_start;
+extern ssize_t _heap_end;
 static caddr_t heap = NULL;
 
 // No reentrant versions of these exist
@@ -166,7 +166,7 @@ _sbrk(ptrdiff_t incr)
   caddr_t nextHeap;
 
   if (heap == NULL) { // first allocation
-    heap = (caddr_t) & _heap;
+    heap = (caddr_t) & _heap_start;
   }
 
   prevHeap = heap;
@@ -174,7 +174,7 @@ _sbrk(ptrdiff_t incr)
   // Always return data aligned on a 8 byte boundary
   //nextHeap = (caddr_t) (((unsigned int) (heap + incr) + 7) & ~7); // Overflow?
   nextHeap = (caddr_t) (((ssize_t) (heap + incr) + 7) & ~7); // Overflow?
-  if (nextHeap >= (caddr_t) & _eheap) {
+  if (nextHeap >= (caddr_t) & _heap_end) {
     errno = ENOMEM;
     return ((void*)-1); // error - no more memory
   } else {
