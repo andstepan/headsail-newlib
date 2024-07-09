@@ -1,11 +1,19 @@
+/**
+ * Copyright (C) SoCHub Finland 2024
+ * 
+ * Authors:
+ *  Andreas Stergiopoulos <andreas.stergiopoulos@tuni.fi>
+ *  Väinö-Waltteri Granat <vaino-waltteri.granat@tuni.fi>
+ * 
+ * Non-reentrant syscalls for Headsail.
+ */
+
 #include <machine/syscall.h>
 #include <sys/types.h>
 #include "uart8250.h"
 #include <unistd.h>
 #include <errno.h>
 #include <sys/stat.h>
-
-//#include <reent.h>
 
 extern ssize_t _heap_start;
 extern ssize_t _heap_end;

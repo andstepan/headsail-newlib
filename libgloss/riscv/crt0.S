@@ -1,13 +1,19 @@
-/* Copyright (c) 2017  SiFive Inc. All rights reserved.
-
-   This copyrighted material is made available to anyone wishing to use,
-   modify, copy, or redistribute it subject to the terms and conditions
-   of the FreeBSD License.   This program is distributed in the hope that
-   it will be useful, but WITHOUT ANY WARRANTY expressed or implied,
-   including the implied warranties of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE.  A copy of this license is available at
-   http://www.opensource.org/licenses.
-*/
+/*
+ * Copyright (c) 2017  SiFive Inc. All rights reserved.
+ * Copyright (C) SoCHub Finland 2024
+ *
+ * This copyrighted material is made available to anyone wishing to use,
+ * modify, copy, or redistribute it subject to the terms and conditions
+ * of the FreeBSD License.   This program is distributed in the hope that
+ * it will be useful, but WITHOUT ANY WARRANTY expressed or implied,
+ * including the implied warranties of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE.  A copy of this license is available at
+ * http://www.opensource.org/licenses.
+ * 
+ * Authors:
+ *  Andreas Stergiopoulos <andreas.stergiopoulos@tuni.fi>
+ *  Väinö-Waltteri Granat <vaino-waltteri.granat@tuni.fi>
+ */
 
 #include "newlib.h"
 
