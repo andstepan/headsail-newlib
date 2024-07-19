@@ -37,19 +37,6 @@ _enter:
 .option pop
   la    sp, _stack_top
 
-  # Initialize .data
-  la      a0, metal_segment_data_target_start
-  la      a1, metal_segment_data_target_end
-  la      a2, metal_segment_data_source_start
-
-copy_data:
-  beq a0, a1, clear_bss /* If we have reached the end of .data, move to .bss */
-  lw t0, 0(a2)          /* Load word from source address */
-  sw t0, 0(a0)          /* Store word to destination address */
-  addi a0, a0, 4        /* Increment destination address */
-  addi a2, a2, 4        /* Increment source address */
-  j copy_data           /* Repeat until done */
-
 clear_bss:
   # Clear the bss segment
   la      a0, metal_segment_bss_target_start    # Load start of bss
