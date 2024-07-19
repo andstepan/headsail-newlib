@@ -32,15 +32,15 @@ _enter:
   # Initialize global pointer
 .option push
 .option norelax
-1:auipc gp, %pcrel_hi(__global_pointer$)
+1:auipc gp, %pcrel_hi(_global_pointer$)
   addi  gp, gp, %pcrel_lo(1b)
 .option pop
   la    sp, _stack_top
 
 clear_bss:
   # Clear the bss segment
-  la      a0, metal_segment_bss_target_start    # Load start of bss
-  la      a2, metal_segment_bss_target_end      # Load end of bss
+  la      a0, _bss_target_start    # Load start of bss
+  la      a2, _bss_target_end      # Load end of bss
   sub     a2, a2, a0                            # Get size of bss section
   li      a1, 0                                 # Load fill value
   call    memset
