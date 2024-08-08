@@ -15,42 +15,58 @@
 # crt0.S : Entry point for RISC-V user programs
 #=========================================================================
 
-  .text
-  .global _start
-  .type   _start, @function
-_start:
+.text
+.global _enter
+.type   _enter, @function
+.global uart8250_init
+.type   uart8250_init, @function
+.global _sp
+  
+_enter:
   # Initialize global pointer
 .option push
 .option norelax
 1:auipc gp, %pcrel_hi(__global_pointer$)
   addi  gp, gp, %pcrel_lo(1b)
 .option pop
+  la    sp, _sp
 
+  # Initialize .data
+  la      a0, metal_segment_data_target_start
+  la      a1, metal_segment_data_target_end
+  la      a2, metal_segment_data_source_start
+
+copy_data:
+    beq a0, a1, clear_bss /* If we have reached the end of .data, move to .bss */
+    lw t0, 0(a2)          /* Load word from source address */
+    sw t0, 0(a0)          /* Store word to destination address */
+    addi a0, a0, 4        /* Increment destination address */
+    addi a2, a2, 4        /* Increment source address */
+    j copy_data           /* Repeat until done */
+
+clear_bss:
   # Clear the bss segment
-  la      a0, __bss_start
-  la      a2, _end
-  sub     a2, a2, a0
-  li      a1, 0
+  la      a0, metal_segment_bss_target_start    # Load start of bss
+  la      a2, metal_segment_bss_target_end      # Load end of bss
+  sub     a2, a2, a0                            # Get size of bss section
+  li      a1, 0                                 # Load fill value
   call    memset
-#ifdef _LITE_EXIT
-  # Make reference to atexit weak to avoid unconditionally pulling in
-  # support code.  Refer to comments in __atexit.c for more details.
-  .weak   atexit
-  la      a0, atexit
-  beqz    a0, .Lweak_atexit
-  .weak   __libc_fini_array
-#endif
 
+  # Exit handling
   la      a0, __libc_fini_array   # Register global termination functions
   call    atexit                  #  to be called upon exit
-#ifdef _LITE_EXIT
-.Lweak_atexit:
-#endif
   call    __libc_init_array       # Run global initialization functions
 
+  # Call UART initialization function
+  lw      a0, 0(sp)                  # a0 = argc
+  addi    a1, sp, __SIZEOF_POINTER__ # a1 = argv
+  li      a2, 0                      # a2 = envp = NULL
+  call    uart8250_init
+
+  # Call main
   lw      a0, 0(sp)                  # a0 = argc
   addi    a1, sp, __SIZEOF_POINTER__ # a1 = argv
   li      a2, 0                      # a2 = envp = NULL
   call    main
   tail    exit
-  .size  _start, .-_start
+  .size  _enter, .-_enter
