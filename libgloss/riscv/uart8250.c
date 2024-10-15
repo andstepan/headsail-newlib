@@ -109,6 +109,15 @@ int uart8250_init()
 		       (16 * uart8250_baudrate);
 	}
 
+	/* Disable GPIO behavior for UART pins. as per the apb_uart0 Rust example*/
+	volatile uint32_t *pad_conf_uart0_tx = (volatile uint32_t *)0x1FFF07064;
+	/* I have no idea what registers we are supposed to unmask. */
+	uint32_t mask = (0 | (0b1 << 5) | (0b1 << 10));
+	/* Read - Modify - Write */
+	uint32_t reg_val = *pad_conf_uart0_tx;	/* Read */
+	reg_val &= ~mask;						/* Modify */					
+	*pad_conf_uart0_tx = reg_val;			/* Write */
+
 	/* Disable all interrupts */
 	set_reg(UART_IER_OFFSET, 0x00);
 	/* Enable DLAB */
